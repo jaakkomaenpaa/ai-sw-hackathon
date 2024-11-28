@@ -1,18 +1,7 @@
-# Welcome to React Router!
+# Welcome to AgriSight !!
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
+### Tools
+Node version 20 is needed at the time of writing
 
 ### Installation
 
@@ -24,12 +13,11 @@ npm install
 
 ### Development
 
-Start the development server with HMR:
+Start the development server:
 
 ```bash
 npm run dev
 ```
-
 Your application will be available at `http://localhost:5173`.
 
 ## Building for Production
@@ -38,6 +26,11 @@ Create a production build:
 
 ```bash
 npm run build
+```
+Serve a production build:
+
+```bash
+npm run start
 ```
 
 ## Deployment
