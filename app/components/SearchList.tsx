@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Box, List, ListItem, styled, TextField } from "@mui/material";
+import { useSelection, useSelectionActions } from "~/stores/SelectionStore";
 
 
 const SearchField = styled(TextField)(() => ({
@@ -23,7 +24,7 @@ const SearchField = styled(TextField)(() => ({
 }));
 
 const StyledListItem = styled(ListItem)(({ active }: { active: string }) => ({
-  backgroundColor: active ? "grey[500]" : "#FFFFFF", // White by default, highlight when active
+  backgroundColor: active ? "lightgray" : "#FFFFFF", // White by default, highlight when active
   border: "1px solid #E0E0E0", // Subtle border
   borderRadius: "0.5rem", // Rounded corners
   boxShadow: active
@@ -67,6 +68,9 @@ export const SearchableList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const items = ["sähkön hinta", "kauran hinta", "lannoitteiden hinta"];
 
+  const selection = useSelection();
+  const { updateItems } = useSelectionActions();
+
   const filteredItems = items.filter((item) =>
     item.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -86,7 +90,14 @@ export const SearchableList = () => {
         sx={{ borderRadius: "0.5rem" }}>
         {filteredItems.map((item, index) => (
           <StyledListItem
-            key={index} active={""}          >
+            onClick={() => {
+              if (selection.includes(item)) {
+                updateItems(selection.filter((selectedItem) => selectedItem !== item))
+                return
+              }
+              updateItems([...selection, item])
+            }}
+            key={index} active={selection.includes(item) ? item : ""}          >
             {item}
           </StyledListItem>
         ))}

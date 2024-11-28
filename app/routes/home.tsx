@@ -81,7 +81,7 @@ export default function Home() {
             justifyContent: "center",
             alignItems: "center"
           }}>
-            <CircularProgress size="4rem" />
+            <CircularProgress size="4rem" color="success" />
           </Box>}>
             <LineChart />
           </Suspense>
