@@ -9,7 +9,7 @@ const theme = createTheme({
       main: '#FFA726', // Orange accent from the logo
     },
     background: {
-      default: '#FAFAFA', // Light neutral background for the app
+      default: '#baccbc', // Light neutral background for the app
       paper: '#FFFFFF', // Card or container background
     },
     text: {
