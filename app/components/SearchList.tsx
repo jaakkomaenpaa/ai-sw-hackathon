@@ -22,7 +22,7 @@ const SearchField = styled(TextField)(() => ({
   },
 }));
 
-const StyledListItem = styled(ListItem)(({ active }: { active: boolean }) => ({
+const StyledListItem = styled(ListItem)(({ active }: { active: string }) => ({
   backgroundColor: active ? "grey[500]" : "#FFFFFF", // White by default, highlight when active
   border: "1px solid #E0E0E0", // Subtle border
   borderRadius: "0.5rem", // Rounded corners
@@ -86,7 +86,7 @@ export const SearchableList = () => {
         sx={{ borderRadius: "0.5rem" }}>
         {filteredItems.map((item, index) => (
           <StyledListItem
-            key={index} active={false}          >
+            key={index} active={""}          >
             {item}
           </StyledListItem>
         ))}

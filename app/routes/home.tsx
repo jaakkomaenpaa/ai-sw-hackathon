@@ -1,6 +1,8 @@
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import type { Route } from "./+types/home";
 import { SearchableList } from "~/components/SearchList";
+import { LineChart } from "~/components/LineChart";
+import { Suspense } from "react";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -74,7 +76,15 @@ export default function Home() {
           p: "0.5rem",
           border: "1px solid #E0E0E0" /* Subtle light gray border */
         }}>
-          graafi
+          <Suspense fallback={<Box sx={{
+            display: "flex", flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+            <CircularProgress size="4rem" />
+          </Box>}>
+            <LineChart />
+          </Suspense>
         </Box>
       </Box>
     </Box >
