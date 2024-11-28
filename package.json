@@ -9,6 +9,10 @@
     "typecheck": "react-router typegen && tsc --build --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.9",
     "@react-router/node": "^7.0.1",
     "@react-router/serve": "^7.0.1",
     "isbot": "^5.1.17",
