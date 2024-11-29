@@ -1,10 +1,9 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
-import type { Route } from "./+types/home";
 import { SearchableList } from "~/components/SearchList";
 import { LineChart } from "~/components/LineChart";
 import { Suspense } from "react";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "AgriSight" },
     { name: "description", content: "Welcome to AgriSight" },
