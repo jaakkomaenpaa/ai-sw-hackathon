@@ -7,10 +7,12 @@ import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import { MuiProvider } from "./MuiProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const ABORT_DELAY = 5_000;
+const queryClient = new QueryClient();
 
-export default function handleRequest(
+export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
@@ -29,12 +31,15 @@ export default function handleRequest(
         : "onShellReady";
 
     const { pipe, abort } = renderToPipeableStream(
-      <MuiProvider>
-        <ServerRouter
-          context={routerContext}
-          url={request.url}
-          abortDelay={ABORT_DELAY}
-        /></MuiProvider>,
+      <QueryClientProvider client={queryClient}>
+        <MuiProvider>
+          <ServerRouter
+            context={routerContext}
+            url={request.url}
+            abortDelay={ABORT_DELAY}
+          />
+        </MuiProvider>
+      </QueryClientProvider>,
       {
         [readyOption]() {
           shellRendered = true;
