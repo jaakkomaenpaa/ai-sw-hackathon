@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, List, ListItem, styled, TextField } from "@mui/material";
 import { useSelection, useSelectionActions } from "~/stores/SelectionStore";
-
+import { useLocale } from "~/stores/LocaleStore";
 
 const SearchField = styled(TextField)(() => ({
   backgroundColor: "background.paper", // Matches the list container background
@@ -49,13 +49,13 @@ const StyledList = styled(List)(({ theme }) => ({
   overflowY: "auto", // Allow scrolling if content overflows
 }));
 
-
-
 function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
+  const { translations } = useLocale();
+
   return (
     <SearchField
       sx={{ borderRadius: "0.5rem", backgroundColor: "background.paper" }}
-      placeholder="Hae..."
+      placeholder={translations.search}
       variant="outlined"
       size="small"
       onChange={(e) => onSearch(e.target.value)}
@@ -63,10 +63,11 @@ function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
   );
 }
 
-
 export const SearchableList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const items = ["sähkön hinta", "kauran hinta", "lannoitteiden hinta"];
+  const { translations } = useLocale();
+
+  const items = Object.values(translations.listItems);
 
   const selection = useSelection();
   const { updateItems } = useSelectionActions();
@@ -76,33 +77,37 @@ export const SearchableList = () => {
   );
 
   return (
-    <Box style={{
-      display: "flex",
-      flex: 1,
-      flexDirection: "column",
-      backgroundColor: "background.paper",
-    }}>
+    <Box
+      style={{
+        display: "flex",
+        flex: 1,
+        flexDirection: "column",
+        backgroundColor: "background.paper",
+      }}
+    >
       {/* Search Field */}
       <SearchBar onSearch={setSearchQuery} />
 
       {/* List */}
-      <StyledList
-        sx={{ borderRadius: "0.5rem" }}>
+      <StyledList sx={{ borderRadius: "0.5rem" }}>
         {filteredItems.map((item, index) => (
           <StyledListItem
             onClick={() => {
               if (selection.includes(item)) {
-                updateItems(selection.filter((selectedItem) => selectedItem !== item))
-                return
+                updateItems(
+                  selection.filter((selectedItem) => selectedItem !== item)
+                );
+                return;
               }
-              updateItems([...selection, item])
+              updateItems([...selection, item]);
             }}
-            key={index} active={selection.includes(item) ? item : ""}          >
+            key={index}
+            active={selection.includes(item) ? item : ""}
+          >
             {item}
           </StyledListItem>
         ))}
       </StyledList>
     </Box>
   );
-}
-
+};
