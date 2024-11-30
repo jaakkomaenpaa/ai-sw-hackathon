@@ -12,6 +12,7 @@ import {
 import { fetchFertiliserPrices } from "~/api";
 import { FertiliserProduct } from "~/types";
 import { Box, CircularProgress } from "@mui/material";
+import { useLocale } from "~/stores/LocaleStore";
 
 const SkeletonLoader = () => (
   <ResponsiveContainer width="100%" height="50%">
@@ -63,12 +64,14 @@ const SkeletonLoader = () => (
 );
 
 export const LineChart = () => {
+  const { language } = useLocale();
+
   const product = FertiliserProduct.Potash;
   const years = [2023, 2024];
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["fertiliserPrices"],
-    queryFn: () => fetchFertiliserPrices(product, years),
+    queryKey: ["fertiliserPrices", product, years, language],
+    queryFn: () => fetchFertiliserPrices(product, years, language),
   });
 
   if (isLoading) return <SkeletonLoader />;

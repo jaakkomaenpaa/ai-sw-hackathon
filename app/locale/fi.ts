@@ -1,24 +1,25 @@
-import { Translations } from '.';
+import { ApiResponseMonth } from "~/types";
+import { Translations } from ".";
 
 export const FINNISH: Translations = {
-  search: 'Hae...',
+  search: "Hae...",
   listItems: {
-    electricity: 'sähkön hinta',
-    oat: 'kauran hinta',
-    fertilizers: 'lannoitteiden hinta',
+    electricity: "sähkön hinta",
+    oat: "kauran hinta",
+    fertilizers: "lannoitteiden hinta",
   },
   months: {
-    jan: 'Tammi',
-    feb: 'Helmi',
-    mar: 'Maalis',
-    apr: 'Huhti',
-    may: 'Touko',
-    jun: 'Kesä',
-    jul: 'Heinä',
-    aug: 'Elo',
-    sep: 'Syys',
-    oct: 'Loka',
-    nov: 'Marras',
-    dec: 'Joulu',
+    [ApiResponseMonth.January]: "Tammi",
+    [ApiResponseMonth.February]: "Helmi",
+    [ApiResponseMonth.March]: "Maalis",
+    [ApiResponseMonth.April]: "Huhti",
+    [ApiResponseMonth.May]: "Touko",
+    [ApiResponseMonth.June]: "Kesä",
+    [ApiResponseMonth.July]: "Heinä",
+    [ApiResponseMonth.August]: "Elo",
+    [ApiResponseMonth.September]: "Syys",
+    [ApiResponseMonth.October]: "Loka",
+    [ApiResponseMonth.November]: "Marras",
+    [ApiResponseMonth.December]: "Joulu",
   },
 };

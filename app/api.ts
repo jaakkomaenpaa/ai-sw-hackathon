@@ -1,5 +1,11 @@
 import axios from "axios";
-import { FertiliserProduct, LineChartDataEntry } from "./types";
+import {
+  ApiResponseMonth,
+  FertiliserProduct,
+  Language,
+  LineChartDataEntry,
+} from "./types";
+import { LOCALE } from "./locale";
 
 const BASE_URL = "/api";
 
@@ -15,7 +21,8 @@ type FertiliserPriceResponseObject = {
 
 export const fetchFertiliserPrices = async (
   product: FertiliserProduct,
-  years: number[]
+  years: number[],
+  language: Language
 ): Promise<LineChartDataEntry[]> => {
   const yearString = years.join(",");
 
@@ -23,12 +30,18 @@ export const fetchFertiliserPrices = async (
     `${BASE_URL}/fertiliser/prices?products=${product}&years=${yearString}`
   );
 
+  const months = LOCALE[language].months;
+
   const modifiedData: LineChartDataEntry[] = response.data
-    .map((entry: FertiliserPriceResponseObject) => ({
-      labelFull: `${entry.month} ${entry.year}`,
-      labelShort: `${entry.month} ${entry.year.toString().slice(2)}`,
-      dataValue: entry.price,
-    }))
+    .map((entry: FertiliserPriceResponseObject) => {
+      const month = months[entry.month as ApiResponseMonth];
+
+      return {
+        labelFull: `${month} ${entry.year}`,
+        labelShort: `${month} ${entry.year.toString().slice(2)}`,
+        dataValue: entry.price,
+      };
+    })
     .reverse();
 
   return modifiedData;

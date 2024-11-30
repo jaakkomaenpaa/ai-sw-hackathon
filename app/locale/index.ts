@@ -1,4 +1,4 @@
-import { Language } from "../types";
+import { ApiResponseMonth, Language } from "../types";
 import { ENGLISH } from "./en";
 import { FINNISH } from "./fi";
 
@@ -8,7 +8,7 @@ export type Translations = {
     [key: string]: string;
   };
   months: {
-    [key: string]: string;
+    [key in ApiResponseMonth]: string;
   };
   [key: string]: string | { [key: string]: string };
 };
