@@ -1,3 +1,4 @@
+import { useQueries } from "@tanstack/react-query";
 import {
   CartesianGrid,
   Legend,
@@ -7,94 +8,134 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts';
-import { useLocale } from '~/stores/LocaleStore';
+} from "recharts";
+import { fetchFertiliserPrices } from "~/api";
+import {
+  ApiQueryOption,
+  FertiliserProduct,
+  LineDataEntry,
+  LineData,
+  CombinedLineData,
+} from "~/types";
+import { Box, CircularProgress } from "@mui/material";
+import { useLocale } from "~/stores/LocaleStore";
+import { useSelection } from "~/stores/SelectionStore";
+import { useMemo, useState } from "react";
+import { LOCALE } from "~/locale";
 
-const getMockData = (months: string[]) => [
-  {
-    name: months[0],
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: months[1],
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: months[2],
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: months[3],
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: months[4],
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: months[5],
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: months[6],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: months[7],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: months[8],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: months[9],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: months[10],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: months[11],
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+const SkeletonLoader = () => (
+  <ResponsiveContainer width="100%" height="50%">
+    <Box style={{ position: "relative" }}>
+      <svg viewBox="0 0 500 300" width="100%" height="100%">
+        <rect x="0" y="0" width="500" height="300" fill="#f3f3f3" />
+        <line
+          x1="50"
+          y1="10"
+          x2="50"
+          y2="290"
+          stroke="#e0e0e0"
+          strokeWidth="2"
+        />
+        <line
+          x1="50"
+          y1="290"
+          x2="490"
+          y2="290"
+          stroke="#e0e0e0"
+          strokeWidth="2"
+        />
+        {[1, 2, 3, 4].map((i) => (
+          <circle
+            key={i}
+            cx={50 + i * 100}
+            cy={200 - i * 40}
+            r="5"
+            fill="#ccc"
+          />
+        ))}
+        <text x="200" y="150" fill="#888" fontSize="14" textAnchor="middle">
+          Loading...
+        </text>
+      </svg>
+      <Box
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1000,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    </Box>
+  </ResponsiveContainer>
+);
+
+const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
+  const queryFunctions: {
+    [key in ApiQueryOption]: () => Promise<LineDataEntry[]>;
+  } = {
+    [ApiQueryOption.Nitrogen]: () =>
+      fetchFertiliserPrices(FertiliserProduct.Nitrogen, years),
+    [ApiQueryOption.Phosphorus]: () =>
+      fetchFertiliserPrices(FertiliserProduct.Phosphorus, years),
+    [ApiQueryOption.Potash]: () =>
+      fetchFertiliserPrices(FertiliserProduct.Potash, years),
+  };
+
+  return queryFunctions[option]();
+};
+
 export const LineChart = () => {
-  const { translations } = useLocale();
+  const { language } = useLocale();
+  const selection: ApiQueryOption[] = useSelection();
+  const [years, setYears] = useState<number[]>([2023, 2024]);
 
-  const mockData = getMockData(Object.values(translations.months));
+  const queries = useQueries({
+    queries: useMemo(
+      () =>
+        selection.map((option: ApiQueryOption) => ({
+          queryKey: [option, years, language],
+          queryFn: () => callQueryFuntion(option, years),
+        })),
+      [selection, years, language]
+    ),
+  });
+
+  const isLoading = queries.some((query) => query.isLoading);
+  const error = queries.find((query) => query.error);
+
+  if (isLoading) return <SkeletonLoader />;
+
+  if (error) {
+    const errorMessage =
+      error.error instanceof Error ? error.error.message : "An error occurred";
+    return `Error has occurred: ${errorMessage}`;
+  }
+
+  // Refactor the following section, if feels like it,
+  // should work though
+  const queriesData: LineData[] = [];
+
+  queries.forEach((query, index) => {
+    if (query.data) {
+      queriesData.push({
+        label: LOCALE[language].queryItemLabels[selection[index]],
+        data: query.data,
+      });
+    }
+  });
+
+  const combinedLines: CombinedLineData[] = combineLineData(queriesData);
+  // ... up to here
 
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChartRoot
         width={500}
         height={300}
-        data={mockData}
+        data={combinedLines}
         margin={{
           top: 5,
           right: 30,
@@ -103,18 +144,56 @@ export const LineChart = () => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="quarter" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line
-          type="monotone"
-          dataKey="pv"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+
+        {selection.map((option, index) => (
+          <Line
+            key={option}
+            type="monotone"
+            dataKey={LOCALE[language].queryItemLabels[option]} // Use dynamic data keys like array1Price, array2Price, etc.
+            stroke={LINE_COLORS[index]} // Use an array of colors for the lines
+            activeDot={{ r: 8 }}
+          />
+        ))}
       </LineChartRoot>
     </ResponsiveContainer>
   );
+};
+
+const LINE_COLORS = [
+  "#8884d8", // Blue
+  "#82ca9d", // Green
+  "#FF7300", // Orange
+  "#ff6f61", // Coral
+  "#6a5acd", // Slate Blue
+  "#f2c14e", // Golden Yellow
+  "#49b3a2", // Teal
+  "#e0aaff", // Lavender
+  "#c7d8a7", // Light Green
+  "#ffb347", // Light Orange
+];
+
+const combineLineData = (lineDataArray: LineData[]): CombinedLineData[] => {
+  const combinedData: any[] = [];
+
+  lineDataArray.forEach((line: LineData, i: number) => {
+    line.data.forEach((entry: LineDataEntry, j: number) => {
+      if (i === 0) {
+        combinedData[j] = {
+          quarter: entry.quarter,
+          [line.label]: entry.price,
+        };
+      } else {
+        combinedData[j] = {
+          ...combinedData[j],
+          [line.label]: entry.price,
+        };
+      }
+    });
+  });
+
+  return combinedData as CombinedLineData[];
 };
