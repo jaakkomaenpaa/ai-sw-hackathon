@@ -43,6 +43,7 @@ export enum ApiQueryOption {
   Nitrogen = "nitr",
   Phosphorus = "phos",
   Potash = "pot",
+  Rice = "rice",
 }
 
 export enum Quarter {

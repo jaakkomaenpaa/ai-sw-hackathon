@@ -7,11 +7,13 @@ export const ENGLISH: Translations = {
     [ApiQueryOption.Nitrogen]: "Price of nitrogen",
     [ApiQueryOption.Phosphorus]: "Price of phosphorus",
     [ApiQueryOption.Potash]: "Price of potash",
+    [ApiQueryOption.Rice]: "Price of rice",
   },
   queryItemLabels: {
     [ApiQueryOption.Nitrogen]: "Nitrogen",
     [ApiQueryOption.Phosphorus]: "Phosphorus",
     [ApiQueryOption.Potash]: "Potash",
+    [ApiQueryOption.Rice]: "Rice",
   },
   months: {
     [ApiResponseMonth.January]: "Jan",

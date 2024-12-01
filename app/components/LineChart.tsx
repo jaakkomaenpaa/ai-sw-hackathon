@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { fetchFertiliserPrices } from "~/api";
+import { fetchFertiliserPrices, fetchRicePrices } from "~/api";
 import {
   ApiQueryOption,
   FertiliserProduct,
@@ -25,16 +25,21 @@ import { LOCALE } from "~/locale";
 import useOpenAI from "~/hooks/useOpenAi";
 
 
-const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
+const callQueryFuntion = (
+  option: ApiQueryOption,
+  startYear: number,
+  endYear: number
+) => {
   const queryFunctions: {
     [key in ApiQueryOption]: () => Promise<LineDataEntry[]>;
   } = {
     [ApiQueryOption.Nitrogen]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Nitrogen, years),
+      fetchFertiliserPrices(FertiliserProduct.Nitrogen, startYear, endYear),
     [ApiQueryOption.Phosphorus]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Phosphorus, years),
+      fetchFertiliserPrices(FertiliserProduct.Phosphorus, startYear, endYear),
     [ApiQueryOption.Potash]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Potash, years),
+      fetchFertiliserPrices(FertiliserProduct.Potash, startYear, endYear),
+    [ApiQueryOption.Rice]: () => fetchRicePrices(startYear, endYear),
   };
 
   return queryFunctions[option]();
@@ -43,20 +48,19 @@ const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
 export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
-  const [years] = useState<number[]>([2023, 2024]);
-  const [combinedLines, setCombinedLines] = useState<CombinedLineData[]>([]);
-
 
   const { fetchCompletion, result } = useOpenAI()
+  const [startYear, setStartYear] = useState<number>(2023);
+  const [endYear, setEndYear] = useState<number>(2024);
 
   const queries = useQueries({
     queries: useMemo(
       () =>
         selection.map((option: ApiQueryOption) => ({
-          queryKey: [option, years, language],
-          queryFn: () => callQueryFuntion(option, years),
+          queryKey: [option, startYear, endYear, language],
+          queryFn: () => callQueryFuntion(option, startYear, endYear),
         })),
-      [selection, years, language]
+      [selection, startYear, endYear, language]
     ),
   });
 
@@ -113,15 +117,15 @@ export const LineChart = () => {
           <Tooltip />
           <Legend />
 
-          {selection.map((option, index) => (
-            <Line
-              activeDot={{ r: 8 }}
-              dataKey={LOCALE[language].queryItemLabels[option]} // Use dynamic data keys like array1Price, array2Price, etc.
-              key={option}
-              stroke={LINE_COLORS[index]} // Use an array of colors for the lines
-              type="monotone"
-            />
-          ))}
+        {selection.map((option, index) => (
+          <Line
+            key={option}
+            type="monotone"
+            dataKey={LOCALE[language].queryItemLabels[option]}
+            stroke={LINE_COLORS[index]}
+            activeDot={{ r: 8 }}
+          />
+        ))}
         </LineChartRoot>
       </ResponsiveContainer>
       <Button onClick={
@@ -152,7 +156,13 @@ const LINE_COLORS = [
 const combineLineData = (lineDataArray: LineData[]): CombinedLineData[] => {
   const combinedData: any[] = [];
 
-  lineDataArray.forEach((line: LineData, i: number) => {
+  // Sort arrays so that labels show correctly according to
+  // the line with most data
+  const sortedArrays = lineDataArray.sort(
+    (a: LineData, b: LineData) => b.data.length - a.data.length
+  );
+
+  sortedArrays.forEach((line: LineData, i: number) => {
     line.data.forEach((entry: LineDataEntry, j: number) => {
       if (i === 0) {
         combinedData[j] = {
