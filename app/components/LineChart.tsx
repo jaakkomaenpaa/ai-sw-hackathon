@@ -20,11 +20,8 @@ import {
 import { CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
-import { PredictDataPrompt } from "~/constants";
-import OpenAI from "openai";
-import useOpenAI from "~/hooks/useOpenAi";
 
 
 const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
@@ -42,17 +39,10 @@ const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
   return queryFunctions[option]();
 };
 
-//This honestly sucks, because this reference should be semi static, but it's not
-//also this produces a small error occasionally to console, it works tho :D
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-
 export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
-  const [years, setYears] = useState<number[]>([2023, 2024]);
+  const [years] = useState<number[]>([2023, 2024]);
 
   const queries = useQueries({
     queries: useMemo(
@@ -81,15 +71,6 @@ export const LineChart = () => {
     })
       .filter((item): item is LineData => item !== undefined),
     [language, queries, selection])
-
-  //Yikes very ugly cast
-  const { result, fetchCompletion } = useOpenAI(openai as unknown as OpenAI);
-
-  useEffect(() => {
-    fetchCompletion({ model: PredictDataPrompt, prompt: queriesData }).then(() =>
-      console.log(result))
-  }, [fetchCompletion, queriesData, result])
-
 
   const combinedLines: CombinedLineData[] = useMemo(() =>
     combineLineData(queriesData), [queriesData])
