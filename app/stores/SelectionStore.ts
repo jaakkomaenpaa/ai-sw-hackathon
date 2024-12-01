@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ApiQueryOption } from "~/types";
+import { ApiQueryOption } from "~/types/DataTypes";
 
 // Define a type for the store's state and actions
 type SelectionStore = {

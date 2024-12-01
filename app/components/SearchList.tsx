@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Box, List, ListItem, styled, TextField } from "@mui/material";
 import { useSelection, useSelectionActions } from "~/stores/SelectionStore";
 import { useLocale } from "~/stores/LocaleStore";
-import { ApiQueryOption } from "~/types";
+import { ApiQueryOption } from "~/types/DataTypes";
 import { LOCALE } from "~/locale";
 
 const SearchField = styled(TextField)(() => ({
@@ -56,9 +56,7 @@ function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
 
   return (
     <SearchField
-      sx={{ borderRadius: "0.5rem", backgroundColor: "background.paper" }}
       placeholder={translations.search}
-      variant="outlined"
       size="small"
       sx={{ borderRadius: "0.5rem", backgroundColor: "background.paper" }}
       variant="outlined"
@@ -99,7 +97,8 @@ export const SearchableList = () => {
         {filteredItems.map((item, index) => (
           <StyledListItem
             active={selection.includes(item) ? item : ""}
-            key={index} onClick={() => {
+            key={index}
+            onClick={() => {
               if (selection.includes(item)) {
                 updateItems(
                   selection.filter((selectedItem) => selectedItem !== item)
@@ -108,8 +107,6 @@ export const SearchableList = () => {
               }
               updateItems([...selection, item]);
             }}
-            key={index}
-            active={selection.includes(item) ? item : ""}
           >
             {LOCALE[language].queryItems[item]}
           </StyledListItem>

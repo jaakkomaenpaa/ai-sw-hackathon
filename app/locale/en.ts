@@ -1,4 +1,4 @@
-import { ApiQueryOption, ApiResponseMonth } from "~/types";
+import { ApiQueryOption, ApiResponseMonth } from "~/types/DataTypes";
 import { Translations } from ".";
 
 export const ENGLISH: Translations = {

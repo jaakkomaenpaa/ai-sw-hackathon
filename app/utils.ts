@@ -1,4 +1,4 @@
-import { ApiResponseMonth, Quarter } from "./types";
+import { ApiResponseMonth, Quarter } from "./types/DataTypes";
 
 export const getQuarterByWeekNumber = (week: number) => {
   if (week >= 1 && week <= 13) {

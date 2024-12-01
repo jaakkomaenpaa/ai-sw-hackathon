@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { LOCALE, Translations } from "~/locale";
-import { Language } from "~/types";
+import { Language } from "~/types/DataTypes";
 
 type LocaleStore = {
   language: Language;

@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -27,8 +28,17 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export async function loader() {
+  return {
+    ENV: {
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    },
+  };
+}
+
 const queryClient = new QueryClient();
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -44,6 +54,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {children}
           </ThemeProvider>
           <ScrollRestoration />
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `window.ENV = ${JSON.stringify(
+                data.ENV
+              )}`,
+            }}
+          />
+
           <Scripts />
         </QueryClientProvider>
       </body>

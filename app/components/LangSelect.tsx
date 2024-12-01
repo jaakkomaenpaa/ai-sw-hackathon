@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@mui/material';
 import { useLocale } from '~/stores/LocaleStore';
-import { Language } from '~/types';
+import { Language } from '~/types/DataTypes';
 import flagFI from '../resources/flag-fi.png';
 import flagGB from '../resources/flag-gb.png';
 
@@ -24,12 +24,12 @@ export const LangSelect = () => {
       }}
     >
       <IconButton onClick={() => handleSelect(Language.English)}>
-        <img src={flagGB} alt="English" width={30} height={20} />
+        <img alt="English" height={20} src={flagGB} width={30} />
       </IconButton>
 
       {/* Finnish Flag */}
       <IconButton onClick={() => handleSelect(Language.Finnish)}>
-        <img src={flagFI} alt="Finnish" width={30} height={20} />
+        <img alt="Finnish" height={20} src={flagFI} width={30} />
       </IconButton>
     </Box>
   );
