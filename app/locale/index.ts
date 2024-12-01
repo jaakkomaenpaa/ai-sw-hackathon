@@ -1,4 +1,4 @@
-import { ApiQueryOption, ApiResponseMonth, Language } from "../types";
+import { ApiQueryOption, ApiResponseMonth, Language } from "~/types/DataTypes";
 import { ENGLISH } from "./en";
 import { FINNISH } from "./fi";
 
