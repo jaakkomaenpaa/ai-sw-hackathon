@@ -3,9 +3,9 @@ import {
   ApiResponseMonth,
   FertiliserProduct,
   Language,
-  LineChartDataEntry,
+  LineDataEntry,
 } from "./types";
-import { LOCALE } from "./locale";
+import { getQuarterByMonthType } from "./utils";
 
 const BASE_URL = "/api";
 
@@ -23,23 +23,20 @@ export const fetchFertiliserPrices = async (
   product: FertiliserProduct,
   years: number[],
   language: Language
-): Promise<LineChartDataEntry[]> => {
+): Promise<LineDataEntry[]> => {
   const yearString = years.join(",");
 
   const response = await axios.get(
     `${BASE_URL}/fertiliser/prices?products=${product}&years=${yearString}`
   );
 
-  const months = LOCALE[language].months;
-
-  const modifiedData: LineChartDataEntry[] = response.data
+  const modifiedData: LineDataEntry[] = response.data
     .map((entry: FertiliserPriceResponseObject) => {
-      const month = months[entry.month as ApiResponseMonth];
-
       return {
-        labelFull: `${month} ${entry.year}`,
-        labelShort: `${month} ${entry.year.toString().slice(2)}`,
-        dataValue: entry.price,
+        quarter: `${getQuarterByMonthType(entry.month as ApiResponseMonth)} ${
+          entry.year
+        }`,
+        price: entry.price,
       };
     })
     .reverse();

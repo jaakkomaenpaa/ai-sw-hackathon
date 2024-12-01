@@ -1,11 +1,12 @@
 import { create } from "zustand";
+import { ApiQueryOption } from "~/types";
 
 // Define a type for the store's state and actions
 type SelectionStore = {
-  selectedItems: string[]; // Array of selected items
+  selectedItems: ApiQueryOption[]; // Array of selected items
   selectionActions: {
     removeAllItems: () => void; // Action to remove all items
-    updateItems: (newItems: string[]) => void; // Action to update selected items
+    updateItems: (newItems: ApiQueryOption[]) => void; // Action to update selected items
   };
 };
 

@@ -1,11 +1,11 @@
-import { ApiResponseMonth, Language } from "../types";
+import { ApiQueryOption, ApiResponseMonth, Language } from "../types";
 import { ENGLISH } from "./en";
 import { FINNISH } from "./fi";
 
 export type Translations = {
   search: string;
-  listItems: {
-    [key: string]: string;
+  queryItems: {
+    [key in ApiQueryOption]: string;
   };
   months: {
     [key in ApiResponseMonth]: string;

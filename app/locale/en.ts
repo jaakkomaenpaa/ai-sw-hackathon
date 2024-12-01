@@ -1,12 +1,12 @@
-import { ApiResponseMonth } from "~/types";
+import { ApiQueryOption, ApiResponseMonth } from "~/types";
 import { Translations } from ".";
 
 export const ENGLISH: Translations = {
   search: "Search...",
-  listItems: {
-    electricity: "price of electricity",
-    oat: "price of oat",
-    fertilizers: "price of fertilizers",
+  queryItems: {
+    [ApiQueryOption.Nitrogen]: "Price of nitrogen",
+    [ApiQueryOption.Phosphorus]: "Price of phosphorus",
+    [ApiQueryOption.Potash]: "Price of potash",
   },
   months: {
     [ApiResponseMonth.January]: "Jan",

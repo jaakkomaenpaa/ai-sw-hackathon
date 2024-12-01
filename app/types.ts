@@ -25,8 +25,29 @@ export enum ApiResponseMonth {
   December = "Dec",
 }
 
-export type LineChartDataEntry = {
-  labelFull: string;
-  labelShort: string;
-  dataValue: number;
+export type LineDataEntry = {
+  quarter: `${Quarter}-${number}`;
+  price: number;
 };
+
+export type LineData = {
+  option: ApiQueryOption;
+  data: LineDataEntry[];
+};
+
+export type CombinedLineData = {
+  quarter: `${Quarter}-${number}`;
+} & Record<string, number>;
+
+export enum ApiQueryOption {
+  Nitrogen = "nitr",
+  Phosphorus = "phos",
+  Potash = "pot",
+}
+
+export enum Quarter {
+  Q1 = "Q1",
+  Q2 = "Q2",
+  Q3 = "Q3",
+  Q4 = "Q4",
+}

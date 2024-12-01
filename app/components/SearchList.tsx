@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Box, List, ListItem, styled, TextField } from "@mui/material";
 import { useSelection, useSelectionActions } from "~/stores/SelectionStore";
 import { useLocale } from "~/stores/LocaleStore";
+import { ApiQueryOption } from "~/types";
+import { LOCALE } from "~/locale";
 
 const SearchField = styled(TextField)(() => ({
   backgroundColor: "background.paper", // Matches the list container background
@@ -65,15 +67,18 @@ function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
 
 export const SearchableList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { translations } = useLocale();
+  const { language } = useLocale();
 
-  const items = Object.values(translations.listItems);
+  //const items: QueryOptionData[] = Object.values(getQueryOptions(language));
+  const items: ApiQueryOption[] = Object.values(ApiQueryOption);
 
   const selection = useSelection();
   const { updateItems } = useSelectionActions();
 
   const filteredItems = items.filter((item) =>
-    item.toLowerCase().includes(searchQuery.toLowerCase())
+    LOCALE[language].queryItems[item]
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -104,7 +109,7 @@ export const SearchableList = () => {
             key={index}
             active={selection.includes(item) ? item : ""}
           >
-            {item}
+            {LOCALE[language].queryItems[item]}
           </StyledListItem>
         ))}
       </StyledList>

@@ -1,12 +1,12 @@
-import { ApiResponseMonth } from "~/types";
+import { ApiQueryOption, ApiResponseMonth } from "~/types";
 import { Translations } from ".";
 
 export const FINNISH: Translations = {
   search: "Hae...",
-  listItems: {
-    electricity: "sähkön hinta",
-    oat: "kauran hinta",
-    fertilizers: "lannoitteiden hinta",
+  queryItems: {
+    [ApiQueryOption.Nitrogen]: "Typen hinta",
+    [ApiQueryOption.Phosphorus]: "Fosforin hinta",
+    [ApiQueryOption.Potash]: "Potaskan hinta",
   },
   months: {
     [ApiResponseMonth.January]: "Tammi",
