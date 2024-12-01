@@ -8,6 +8,11 @@ export const ENGLISH: Translations = {
     [ApiQueryOption.Phosphorus]: "Price of phosphorus",
     [ApiQueryOption.Potash]: "Price of potash",
   },
+  queryItemLabels: {
+    [ApiQueryOption.Nitrogen]: "Nitrogen",
+    [ApiQueryOption.Phosphorus]: "Phosphorus",
+    [ApiQueryOption.Potash]: "Potash",
+  },
   months: {
     [ApiResponseMonth.January]: "Jan",
     [ApiResponseMonth.February]: "Feb",

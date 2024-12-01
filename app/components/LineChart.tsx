@@ -13,7 +13,6 @@ import { fetchFertiliserPrices } from "~/api";
 import {
   ApiQueryOption,
   FertiliserProduct,
-  Language,
   LineDataEntry,
   LineData,
   CombinedLineData,
@@ -22,6 +21,7 @@ import { Box, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useMemo, useState } from "react";
+import { LOCALE } from "~/locale";
 
 const SkeletonLoader = () => (
   <ResponsiveContainer width="100%" height="50%">
@@ -72,20 +72,16 @@ const SkeletonLoader = () => (
   </ResponsiveContainer>
 );
 
-const callQueryFuntion = (
-  option: ApiQueryOption,
-  years: number[],
-  language: Language
-) => {
+const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
   const queryFunctions: {
     [key in ApiQueryOption]: () => Promise<LineDataEntry[]>;
   } = {
     [ApiQueryOption.Nitrogen]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Nitrogen, years, language),
+      fetchFertiliserPrices(FertiliserProduct.Nitrogen, years),
     [ApiQueryOption.Phosphorus]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Phosphorus, years, language),
+      fetchFertiliserPrices(FertiliserProduct.Phosphorus, years),
     [ApiQueryOption.Potash]: () =>
-      fetchFertiliserPrices(FertiliserProduct.Potash, years, language),
+      fetchFertiliserPrices(FertiliserProduct.Potash, years),
   };
 
   return queryFunctions[option]();
@@ -101,27 +97,11 @@ export const LineChart = () => {
       () =>
         selection.map((option: ApiQueryOption) => ({
           queryKey: [option, years, language],
-          queryFn: () => callQueryFuntion(option, years, language),
+          queryFn: () => callQueryFuntion(option, years),
         })),
       [selection, years, language]
     ),
   });
-
-  // Refactor the following section, if feels like it,
-  // should work though
-  const queriesData: LineData[] = [];
-
-  queries.forEach((query, index) => {
-    if (query.data) {
-      queriesData.push({
-        option: selection[index],
-        data: query.data,
-      });
-    }
-  });
-
-  const combinedLines: CombinedLineData[] = combineLineData(queriesData);
-  // ... up to here
 
   const isLoading = queries.some((query) => query.isLoading);
   const error = queries.find((query) => query.error);
@@ -133,6 +113,22 @@ export const LineChart = () => {
       error.error instanceof Error ? error.error.message : "An error occurred";
     return `Error has occurred: ${errorMessage}`;
   }
+
+  // Refactor the following section, if feels like it,
+  // should work though
+  const queriesData: LineData[] = [];
+
+  queries.forEach((query, index) => {
+    if (query.data) {
+      queriesData.push({
+        label: LOCALE[language].queryItemLabels[selection[index]],
+        data: query.data,
+      });
+    }
+  });
+
+  const combinedLines: CombinedLineData[] = combineLineData(queriesData);
+  // ... up to here
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -157,7 +153,7 @@ export const LineChart = () => {
           <Line
             key={option}
             type="monotone"
-            dataKey={option} // Use dynamic data keys like array1Price, array2Price, etc.
+            dataKey={LOCALE[language].queryItemLabels[option]} // Use dynamic data keys like array1Price, array2Price, etc.
             stroke={LINE_COLORS[index]} // Use an array of colors for the lines
             activeDot={{ r: 8 }}
           />
@@ -188,12 +184,12 @@ const combineLineData = (lineDataArray: LineData[]): CombinedLineData[] => {
       if (i === 0) {
         combinedData[j] = {
           quarter: entry.quarter,
-          [line.option]: entry.price,
+          [line.label]: entry.price,
         };
       } else {
         combinedData[j] = {
           ...combinedData[j],
-          [line.option]: entry.price,
+          [line.label]: entry.price,
         };
       }
     });

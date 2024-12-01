@@ -2,7 +2,6 @@ import axios from "axios";
 import {
   ApiResponseMonth,
   FertiliserProduct,
-  Language,
   LineDataEntry,
 } from "./types";
 import { getQuarterByMonthType } from "./utils";
@@ -22,7 +21,6 @@ type FertiliserPriceResponseObject = {
 export const fetchFertiliserPrices = async (
   product: FertiliserProduct,
   years: number[],
-  language: Language
 ): Promise<LineDataEntry[]> => {
   const yearString = years.join(",");
 

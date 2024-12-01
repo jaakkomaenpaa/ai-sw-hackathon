@@ -7,6 +7,9 @@ export type Translations = {
   queryItems: {
     [key in ApiQueryOption]: string;
   };
+  queryItemLabels: {
+    [key in ApiQueryOption]: string;
+  };
   months: {
     [key in ApiResponseMonth]: string;
   };

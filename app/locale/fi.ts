@@ -8,6 +8,11 @@ export const FINNISH: Translations = {
     [ApiQueryOption.Phosphorus]: "Fosforin hinta",
     [ApiQueryOption.Potash]: "Potaskan hinta",
   },
+  queryItemLabels: {
+    [ApiQueryOption.Nitrogen]: "Typpi",
+    [ApiQueryOption.Phosphorus]: "Fosfori",
+    [ApiQueryOption.Potash]: "Potaska",
+  },
   months: {
     [ApiResponseMonth.January]: "Tammi",
     [ApiResponseMonth.February]: "Helmi",

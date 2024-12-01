@@ -31,7 +31,7 @@ export type LineDataEntry = {
 };
 
 export type LineData = {
-  option: ApiQueryOption;
+  label: string;
   data: LineDataEntry[];
 };
 
