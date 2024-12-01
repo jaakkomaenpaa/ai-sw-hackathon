@@ -21,7 +21,7 @@ import {
 import { Box, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const SkeletonLoader = () => (
   <ResponsiveContainer width="100%" height="50%">
@@ -95,7 +95,6 @@ export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
   const [years, setYears] = useState<number[]>([2023, 2024]);
-  const [combinedLines, setCombinedLines] = useState<CombinedLineData[]>([]);
 
   const queries = useQueries({
     queries: useMemo(
@@ -108,50 +107,21 @@ export const LineChart = () => {
     ),
   });
 
-  useEffect(() => {
-    if (selection.length === 0) {
-      setCombinedLines([]);
-      return;
-    }
+  // Refactor the following section, if feels like it,
+  // should work though
+  const queriesData: LineData[] = [];
 
-    const tempLines: LineData[] = [];
-
-    queries.forEach((query, index) => {
-      if (query.data) {
-        tempLines.push({
-          option: selection[index],
-          data: query.data,
-        });
-      }
-    });
-
-    console.log("tempLines", tempLines);
-
-    const combinedLines: any[] = [];
-
-    tempLines.forEach((line: LineData, i: number) => {
-      line.data.forEach((entry: LineDataEntry, j: number) => {
-        if (i === 0) {
-          combinedLines[j] = {
-            quarter: entry.quarter,
-            [line.option]: entry.price,
-          };
-        } else {
-          combinedLines[j] = {
-            ...combinedLines[j],
-            [line.option]: entry.price,
-          };
-        }
+  queries.forEach((query, index) => {
+    if (query.data) {
+      queriesData.push({
+        option: selection[index],
+        data: query.data,
       });
-    });
+    }
+  });
 
-    console.log("combined lines", combinedLines);
-    console.log("selection", selection);
-
-    setCombinedLines(combinedLines);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selection]);
+  const combinedLines: CombinedLineData[] = combineLineData(queriesData);
+  // ... up to here
 
   const isLoading = queries.some((query) => query.isLoading);
   const error = queries.find((query) => query.error);
@@ -209,3 +179,25 @@ const LINE_COLORS = [
   "#c7d8a7", // Light Green
   "#ffb347", // Light Orange
 ];
+
+const combineLineData = (lineDataArray: LineData[]): CombinedLineData[] => {
+  const combinedData: any[] = [];
+
+  lineDataArray.forEach((line: LineData, i: number) => {
+    line.data.forEach((entry: LineDataEntry, j: number) => {
+      if (i === 0) {
+        combinedData[j] = {
+          quarter: entry.quarter,
+          [line.option]: entry.price,
+        };
+      } else {
+        combinedData[j] = {
+          ...combinedData[j],
+          [line.option]: entry.price,
+        };
+      }
+    });
+  });
+
+  return combinedData as CombinedLineData[];
+};
