@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Box, List, ListItem, styled, TextField } from "@mui/material";
 import { useSelection, useSelectionActions } from "~/stores/SelectionStore";
 import { useLocale } from "~/stores/LocaleStore";
@@ -60,7 +60,8 @@ function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
       placeholder={translations.search}
       variant="outlined"
       size="small"
-      onChange={(e) => onSearch(e.target.value)}
+      sx={{ borderRadius: "0.5rem", backgroundColor: "background.paper" }}
+      variant="outlined"
     />
   );
 }
@@ -97,7 +98,8 @@ export const SearchableList = () => {
       <StyledList sx={{ borderRadius: "0.5rem" }}>
         {filteredItems.map((item, index) => (
           <StyledListItem
-            onClick={() => {
+            active={selection.includes(item) ? item : ""}
+            key={index} onClick={() => {
               if (selection.includes(item)) {
                 updateItems(
                   selection.filter((selectedItem) => selectedItem !== item)

@@ -96,7 +96,7 @@ export default function Home() {
                   alignItems: 'center',
                 }}
               >
-                <CircularProgress size="4rem" color="success" />
+                <CircularProgress color="success" size="4rem" />
               </Box>
             }
           >
