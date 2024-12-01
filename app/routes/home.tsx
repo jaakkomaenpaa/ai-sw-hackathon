@@ -1,8 +1,10 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import { SearchableList } from '~/components/SearchList';
 import { LineChart } from '~/components/LineChart';
 import { Suspense } from 'react';
 import { LangSelect } from '~/components/LangSelect';
+import { useSelection } from '~/stores/SelectionStore';
+import useOpenAI from '~/hooks/useOpenAi';
 
 export function meta() {
   return [
@@ -14,6 +16,9 @@ export function meta() {
 
 export default function Home() {
 
+  const selection = useSelection()
+
+  const { fetchCompletion, result } = useOpenAI()
 
   return (
     <Box
@@ -48,6 +53,14 @@ export default function Home() {
             border: '1px solid #cccaca' /* Subtle light gray border */,
           }}
         >
+          <Button onClick={
+            () => {
+              console.log("clicked")
+              fetchCompletion({
+                prompt: [],
+                model: 'gpt-4o-mini'
+              }).then(() => console.log(result))
+            }}>kysy jotain apilta</Button>
           uutisvirta??
         </Box>
       </Box>
