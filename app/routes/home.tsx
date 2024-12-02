@@ -10,6 +10,7 @@ import useOpenAI from '~/hooks/useOpenAi';
 import { useDataSets, useUpdateDataSets } from '~/stores/DataStore';
 import { parseDataForLineChart } from '~/utils';
 import { useUpdateAIData } from '~/stores/AIDataStore';
+import { useSelectionActions } from '~/stores/SelectionStore';
 
 export function meta() {
   return [
@@ -25,9 +26,10 @@ export default function Home() {
   const { fetchCompletion, result, loading, error } = useOpenAI()
 
   const dataSets = useDataSets();
-  const setDataSets = useUpdateDataSets();
 
   const updateAIData = useUpdateAIData();
+  const { removeAllItems } = useSelectionActions()
+  const updateDatasets = useUpdateDataSets()
 
   return (
     <Box
@@ -113,6 +115,16 @@ export default function Home() {
             {loading ? <CircularProgress color="success" size="1rem" /> : LOCALE[language].makePredictions}
           </Button>
           {error ? <Typography color="error" variant="body1">{error}</Typography> : null}
+          <Button onClick={
+            () => {
+              console.log('clearing predictions');
+              updateAIData([])
+              removeAllItems()
+              updateDatasets([])
+            }
+          }>
+            Tyhjennä valinnat
+          </Button>
         </Box>
         <Box
           sx={{
@@ -145,4 +157,4 @@ export default function Home() {
       </Box>
     </Box >
   );
-}
+};
