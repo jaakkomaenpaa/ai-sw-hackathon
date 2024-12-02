@@ -17,11 +17,12 @@ import {
   LineData,
   CombinedLineData,
 } from "~/types/DataTypes"
-import { CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
+import useOpenAI from "~/hooks/useOpenAi";
 
 
 const callQueryFuntion = (option: ApiQueryOption, years: number[]) => {
@@ -43,6 +44,9 @@ export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
   const [years] = useState<number[]>([2023, 2024]);
+
+
+  const { fetchCompletion, result } = useOpenAI()
 
   const queries = useQueries({
     queries: useMemo(
@@ -84,36 +88,46 @@ export const LineChart = () => {
   }
 
   return (
-    <ResponsiveContainer height="100%" width="100%">
-      <LineChartRoot
-        data={combinedLines}
-        height={300}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-        width={500}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="quarter" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
+    <>
+      <ResponsiveContainer height="100%" width="100%">
+        <LineChartRoot
+          data={combinedLines}
+          height={300}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+          width={500}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="quarter" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
 
-        {selection.map((option, index) => (
-          <Line
-            activeDot={{ r: 8 }}
-            dataKey={LOCALE[language].queryItemLabels[option]} // Use dynamic data keys like array1Price, array2Price, etc.
-            key={option}
-            stroke={LINE_COLORS[index]} // Use an array of colors for the lines
-            type="monotone"
-          />
-        ))}
-      </LineChartRoot>
-    </ResponsiveContainer>
-  );
+          {selection.map((option, index) => (
+            <Line
+              activeDot={{ r: 8 }}
+              dataKey={LOCALE[language].queryItemLabels[option]} // Use dynamic data keys like array1Price, array2Price, etc.
+              key={option}
+              stroke={LINE_COLORS[index]} // Use an array of colors for the lines
+              type="monotone"
+            />
+          ))}
+        </LineChartRoot>
+      </ResponsiveContainer>
+      <Button onClick={
+        () => {
+          fetchCompletion({
+            prompt: queriesData,
+            model: 'gpt-4o-mini'
+          })
+        }}>kysy jotain apilta</Button>
+      <Box>{result}</Box>
+
+    </>);
 };
 
 const LINE_COLORS = [

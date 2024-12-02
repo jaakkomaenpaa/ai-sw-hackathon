@@ -27,7 +27,9 @@ const useOpenAI = () => {
       }
 
       const data = await response.json();
-      setResult(data);
+      //TODO this needs to be refactored, just something quick to get it working
+      const choice = data.choices[0].message.content ?? "There wasn't a response from the AI.";
+      setResult(choice);
     } catch (err: any) {
       setError(err.message || "An error occurred while fetching the completion.");
       console.error(err);

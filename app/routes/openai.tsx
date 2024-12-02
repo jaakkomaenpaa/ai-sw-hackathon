@@ -22,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
       model: model,
       messages: messages || [
         { role: "system", content: PredictDataPrompt },
-        { role: "user", content: prompt },
+        { role: "user", content: JSON.stringify(prompt) },
       ],
     });
 
