@@ -71,7 +71,6 @@ export const LineChart = () => {
   const { fetchCompletion, result } = useOpenAI()
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
-  const [combinedLines, setCombinedLines] = useState<CombinedLineData[]>([]);
 
   const queries = useQueries({
     queries: useMemo(
@@ -101,13 +100,7 @@ export const LineChart = () => {
       .filter((item): item is LineData => item !== undefined),
     [language, queries, selection])
 
-  //TODO somehow we need to incorporate the ai prediction data into the line chart
-  useEffect(() => {
-    if (!queriesData.length) return
-    console.log("Render")
-    const temp = combineLineData(queriesData)
-    setCombinedLines(temp)
-  }, [queriesData])
+  const combinedLines = useMemo(() => combineLineData(queriesData), [queriesData]);
 
   if (isLoading) return <CircularProgress color="success" />;
 
