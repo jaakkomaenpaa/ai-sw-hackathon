@@ -1,4 +1,4 @@
-import { ApiResponseMonth, LineData, LineDataEntry, Quarter } from "./types/DataTypes";
+import { ApiResponseMonth, CombinedLineData, LineData, LineDataEntry, Quarter } from "./types/DataTypes";
 
 export const getQuarterByWeekNumber = (week: number): Quarter => {
   if (week >= 1 && week <= 13) {
@@ -174,7 +174,7 @@ export const transformWeeksToQuarters = <
   return lineEntries;
 };
 
-const parsePredictionData = (data: any): Record<string, LineData> => {
+export const parsePredictionData = (data: any): Record<string, LineData> => {
   const result: Record<string, LineData> = {};
 
   for (const key in data.data) {
@@ -193,3 +193,34 @@ const parsePredictionData = (data: any): Record<string, LineData> => {
 
   return result;
 };
+
+type ParsedData = {
+  message: { [key: string]: string };
+  data: { [key: string]: { timestamp: string; value: number }[] };
+};
+
+export const parseDataForLineChart = (data: ParsedData): CombinedLineData[] => {
+  const combinedData: CombinedLineData[] = [];
+
+  // Loop through all datasets
+  const datasetKeys = Object.keys(data.data); // Get all dataset keys
+  console.log(datasetKeys);
+
+  datasetKeys.forEach((dataKey) => {
+    const entries = data.data[dataKey]; // Entries for the current dataset
+
+    entries.forEach((entry, index) => {
+      // Ensure the index exists in the combinedData array
+      if (!combinedData[index]) {
+        // @ts-ignore horrible, I know
+        combinedData[index] = { quarter: entry.timestamp }; // Use quarter for the field
+      }
+
+      // Dynamically add the value for the current dataset
+      combinedData[index][dataKey] = entry.value;
+    });
+  });
+
+  return combinedData;
+};
+
