@@ -1,4 +1,4 @@
-import { ApiResponseMonth, Quarter } from "./types/DataTypes";
+import { ApiResponseMonth, LineData, LineDataEntry, Quarter } from "./types/DataTypes";
 
 export const getQuarterByWeekNumber = (week: number) => {
   if (week >= 1 && week <= 13) {
@@ -58,4 +58,24 @@ export const getQuarterByMonthType = (month: ApiResponseMonth) => {
   ) {
     return Quarter.Q4;
   }
+};
+
+const parsePredictionData = (data: any): Record<string, LineData> => {
+  const result: Record<string, LineData> = {};
+
+  for (const key in data.data) {
+    const label = key;
+    const entries = data.data[key];
+    const formattedEntries: LineDataEntry[] = entries.map((entry: any) => ({
+      quarter: entry.quarter,
+      price: entry.price,
+    }));
+
+    result[label] = {
+      label,
+      data: formattedEntries,
+    };
+  }
+
+  return result;
 };

@@ -10,7 +10,7 @@ const useOpenAI = () => {
     setLoading(true);
     setError(null);
     try {
-      // Call the internal Remix API endpoint
+      // Call the internal API endpoint
       const response = await fetch("/openai", {
         method: "POST",
         headers: {

@@ -20,7 +20,7 @@ import {
 import { Box, Button, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
 import useOpenAI from "~/hooks/useOpenAi";
 
@@ -44,6 +44,7 @@ export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
   const [years] = useState<number[]>([2023, 2024]);
+  const [combinedLines, setCombinedLines] = useState<CombinedLineData[]>([]);
 
 
   const { fetchCompletion, result } = useOpenAI()
@@ -76,8 +77,13 @@ export const LineChart = () => {
       .filter((item): item is LineData => item !== undefined),
     [language, queries, selection])
 
-  const combinedLines: CombinedLineData[] = useMemo(() =>
-    combineLineData(queriesData), [queriesData])
+  //TODO somehow we need to incorporate the ai prediction data into the line chart
+  useEffect(() => {
+    if (!queriesData.length) return
+    console.log("Render")
+    const temp = combineLineData(queriesData)
+    setCombinedLines(temp)
+  }, [queriesData])
 
   if (isLoading) return <CircularProgress color="success" />;
 
