@@ -22,7 +22,7 @@ export default function Home() {
 
   const { language } = useLocale();
 
-  const { fetchCompletion, result } = useOpenAI()
+  const { fetchCompletion, result, loading, error } = useOpenAI()
 
   const dataSets = useDataSets();
   const setDataSets = useUpdateDataSets();
@@ -102,15 +102,17 @@ export default function Home() {
               fetchCompletion({
                 prompt: dataSets,
                 model: "gpt-4o-mini"
-              }).then(() => {
-                const temp = parseDataForLineChart(JSON.parse(result ?? ""))
+              }).then(async () => {
+                const parsed = await JSON.parse(result ?? "")
+                console.log("ai response  ", parsed)
+                const temp = parseDataForLineChart(parsed)
                 updateAIData(temp)
               })
             }
           } variant="contained">
-            {LOCALE[language].makePredictions}
+            {loading ? <CircularProgress color="success" size="1rem" /> : LOCALE[language].makePredictions}
           </Button>
-          työkalubaari :DDD
+          {error ? <Typography color="error" variant="body1">{error}</Typography> : null}
         </Box>
         <Box
           sx={{

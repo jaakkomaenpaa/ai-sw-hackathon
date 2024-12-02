@@ -196,7 +196,7 @@ export const parsePredictionData = (data: any): Record<string, LineData> => {
 
 type ParsedData = {
   message: { [key: string]: string };
-  data: { [key: string]: { timestamp: string; value: number }[] };
+  data: { [key: string]: { quarter: string; price: number }[] };
 };
 
 export const parseDataForLineChart = (data: ParsedData): CombinedLineData[] => {
@@ -213,11 +213,11 @@ export const parseDataForLineChart = (data: ParsedData): CombinedLineData[] => {
       // Ensure the index exists in the combinedData array
       if (!combinedData[index]) {
         // @ts-ignore horrible, I know
-        combinedData[index] = { quarter: entry.timestamp }; // Use quarter for the field
+        combinedData[index] = { quarter: entry.quarter }; // Use quarter for the field
       }
 
       // Dynamically add the value for the current dataset
-      combinedData[index][dataKey] = entry.value;
+      combinedData[index][dataKey] = entry.price;
     });
   });
 

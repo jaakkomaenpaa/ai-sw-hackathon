@@ -23,7 +23,7 @@ import {
   CombinedLineData,
   CerealProduct,
 } from "~/types/DataTypes";
-import { Box, Button, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useEffect, useMemo, useState } from "react";
@@ -65,7 +65,6 @@ export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
 
-  const { fetchCompletion, result } = useOpenAI();
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
 
@@ -84,6 +83,8 @@ export const LineChart = () => {
       [selection, startYear, endYear, language]
     ),
   });
+
+  console.log(aidata)
 
   const isLoading = queries.some((query) => query.isLoading);
   const error = queries.find((query) => query.error);
@@ -104,22 +105,7 @@ export const LineChart = () => {
     [language, queries, selection]
   );
 
-  const queriesData: LineData[] = useMemo(() =>
-    queries.map((query, index) => {
-      if (query.data) {
-        return ({
-          label: LOCALE[language].queryItemLabels[selection[index]],
-          data: query.data,
-        }) as LineData;
-      }
-      return undefined
-    })
-      .filter((item): item is LineData => item !== undefined),
-    [language, queries, selection])
-
-
   const combinedLines = useMemo(() => combineLineData(queriesData), [queriesData]);
-  console.log(combinedLines)
 
   // Avoid infinite loop by checking data equality
   useEffect(() => {
