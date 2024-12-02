@@ -10,11 +10,9 @@ export enum FertiliserProduct {
 }
 
 export enum CerealProduct {
-  FeedOats = "AVO", 
+  FeedOats = "AVO",
   FeedRye = "SEGFOUR",
-  FeedWheat = "BLTFOUT",
   MaltingBarley = "ORGBRAS",
-  MillingOats = "AVOMILL",
   MillingRye = "SEGPAN",
   MillingWheat = "BLTPAN", // Works with PT
 }
@@ -54,13 +52,11 @@ export enum ApiQueryOption {
   Phosphorus = "phos",
   Potash = "pot",
   Rice = "rice",
-  FeedOats = "AVO",
-  FeedRye = "SEGFOUR",
-  FeedWheat = "BLTFOUT",
-  MaltingBarley = "ORGBRAS",
-  MillingOats = "AVOMILL",
-  MillingRye = "SEGPAN",
-  MillingWheat = "BLTPAN",
+  FeedOats = CerealProduct.FeedOats,
+  FeedRye = CerealProduct.FeedRye,
+  MaltingBarley = CerealProduct.MaltingBarley,
+  MillingRye = CerealProduct.MillingRye,
+  MillingWheat = CerealProduct.MillingWheat,
 }
 
 export enum Quarter {

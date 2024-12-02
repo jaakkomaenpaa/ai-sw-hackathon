@@ -21,14 +21,13 @@ import {
   LineData,
   CombinedLineData,
   CerealProduct,
-} from "~/types/DataTypes"
+} from "~/types/DataTypes";
 import { Box, Button, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useEffect, useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
 import useOpenAI from "~/hooks/useOpenAi";
-
 
 const callQueryFuntion = (
   option: ApiQueryOption,
@@ -49,12 +48,8 @@ const callQueryFuntion = (
       fetchCerealPrices(CerealProduct.FeedOats, startYear, endYear),
     [ApiQueryOption.FeedRye]: () =>
       fetchCerealPrices(CerealProduct.FeedRye, startYear, endYear),
-    [ApiQueryOption.FeedWheat]: () =>
-      fetchCerealPrices(CerealProduct.FeedWheat, startYear, endYear),
     [ApiQueryOption.MaltingBarley]: () =>
       fetchCerealPrices(CerealProduct.MaltingBarley, startYear, endYear),
-    [ApiQueryOption.MillingOats]: () =>
-      fetchCerealPrices(CerealProduct.MillingOats, startYear, endYear),
     [ApiQueryOption.MillingRye]: () =>
       fetchCerealPrices(CerealProduct.MillingRye, startYear, endYear),
     [ApiQueryOption.MillingWheat]: () =>
@@ -68,7 +63,7 @@ export const LineChart = () => {
   const { language } = useLocale();
   const selection: ApiQueryOption[] = useSelection();
 
-  const { fetchCompletion, result } = useOpenAI()
+  const { fetchCompletion, result } = useOpenAI();
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
 
@@ -86,21 +81,26 @@ export const LineChart = () => {
   const isLoading = queries.some((query) => query.isLoading);
   const error = queries.find((query) => query.error);
 
+  const queriesData: LineData[] = useMemo(
+    () =>
+      queries
+        .map((query, index) => {
+          if (query.data) {
+            return {
+              label: LOCALE[language].queryItemLabels[selection[index]],
+              data: query.data,
+            } as LineData;
+          }
+          return undefined;
+        })
+        .filter((item): item is LineData => item !== undefined),
+    [language, queries, selection]
+  );
 
-  const queriesData: LineData[] = useMemo(() =>
-    queries.map((query, index) => {
-      if (query.data) {
-        return ({
-          label: LOCALE[language].queryItemLabels[selection[index]],
-          data: query.data,
-        }) as LineData;
-      }
-      return undefined
-    })
-      .filter((item): item is LineData => item !== undefined),
-    [language, queries, selection])
-
-  const combinedLines = useMemo(() => combineLineData(queriesData), [queriesData]);
+  const combinedLines = useMemo(
+    () => combineLineData(queriesData),
+    [queriesData]
+  );
 
   if (isLoading) return <CircularProgress color="success" />;
 
@@ -141,16 +141,19 @@ export const LineChart = () => {
           ))}
         </LineChartRoot>
       </ResponsiveContainer>
-      <Button onClick={
-        () => {
+      <Button
+        onClick={() => {
           fetchCompletion({
             prompt: queriesData,
-            model: 'gpt-4o-mini'
-          })
-        }}>kysy jotain apilta</Button>
+            model: "gpt-4o-mini",
+          });
+        }}
+      >
+        kysy jotain apilta
+      </Button>
       <Box>{result}</Box>
-
-    </>);
+    </>
+  );
 };
 
 const LINE_COLORS = [
