@@ -20,6 +20,7 @@ import {
   LineDataEntry,
   LineData,
   CombinedLineData,
+  CerealProduct,
 } from "~/types/DataTypes"
 import { Box, Button, CircularProgress } from "@mui/material";
 import { useLocale } from "~/stores/LocaleStore";
@@ -70,6 +71,7 @@ export const LineChart = () => {
   const { fetchCompletion, result } = useOpenAI()
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
+  const [combinedLines, setCombinedLines] = useState<CombinedLineData[]>([]);
 
   const queries = useQueries({
     queries: useMemo(
@@ -135,15 +137,15 @@ export const LineChart = () => {
           <Tooltip />
           <Legend />
 
-        {selection.map((option, index) => (
-          <Line
-            key={option}
-            type="monotone"
-            dataKey={LOCALE[language].queryItemLabels[option]}
-            stroke={LINE_COLORS[index]}
-            activeDot={{ r: 8 }}
-          />
-        ))}
+          {selection.map((option, index) => (
+            <Line
+              activeDot={{ r: 8 }}
+              dataKey={LOCALE[language].queryItemLabels[option]}
+              key={option}
+              stroke={LINE_COLORS[index]}
+              type="monotone"
+            />
+          ))}
         </LineChartRoot>
       </ResponsiveContainer>
       <Button onClick={
