@@ -79,11 +79,11 @@ export const fetchRicePrices = async (
 
   const response = await axios.get(
     `${BASE_URL}/rice/prices` +
-      `?memberStateCodes=${countryCodes}` +
-      `&beginDate=${beginDate}` +
-      `&endDate=${endDate}` +
-      `&varieties=${varieties} `
-      //`&stages=${stages}`
+    `?memberStateCodes=${countryCodes}` +
+    `&beginDate=${beginDate}` +
+    `&endDate=${endDate}` +
+    `&varieties=${varieties} ` +
+    `&stages=${stages}`
   );
 
   const modifiedData: EditedRicePriceResponse[] = response.data

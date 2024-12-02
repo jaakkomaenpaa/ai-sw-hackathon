@@ -7,7 +7,9 @@ import { NewsFeed } from '~/components/Newsfeed';
 import { LOCALE } from '~/locale';
 import { useLocale } from '~/stores/LocaleStore';
 import useOpenAI from '~/hooks/useOpenAi';
-import { useDataStore } from '~/stores/DataStore';
+import { useDataSets, useUpdateDataSets } from '~/stores/DataStore';
+import { parseDataForLineChart } from '~/utils';
+import { useUpdateAIData } from '~/stores/AIDataStore';
 
 export function meta() {
   return [
@@ -19,8 +21,13 @@ export function meta() {
 export default function Home() {
 
   const { language } = useLocale();
-  const { fetchCompletion } = useOpenAI()
-  const { dataSets } = useDataStore();
+
+  const { fetchCompletion, result } = useOpenAI()
+
+  const dataSets = useDataSets();
+  const setDataSets = useUpdateDataSets();
+
+  const updateAIData = useUpdateAIData();
 
   return (
     <Box
@@ -95,6 +102,9 @@ export default function Home() {
               fetchCompletion({
                 prompt: dataSets,
                 model: "gpt-4o-mini"
+              }).then(() => {
+                const temp = parseDataForLineChart(JSON.parse(result ?? ""))
+                updateAIData(temp)
               })
             }
           } variant="contained">
@@ -131,6 +141,6 @@ export default function Home() {
           </Suspense>
         </Box>
       </Box>
-    </Box>
+    </Box >
   );
 }

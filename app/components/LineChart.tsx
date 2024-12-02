@@ -1,4 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
+import { isEqual } from "es-toolkit";
 import {
   CartesianGrid,
   Legend,
@@ -27,7 +28,8 @@ import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useEffect, useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
-import { useDataStore } from "~/stores/DataStore";
+import { useDataSets, useUpdateDataSets } from "~/stores/DataStore";
+import { useAIData } from "~/stores/AIDataStore";
 
 const callQueryFuntion = (
   option: ApiQueryOption,
@@ -67,7 +69,10 @@ export const LineChart = () => {
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
 
-  const { setDataSets } = useDataStore();
+  const setDataSets = useUpdateDataSets();
+  const dataSets = useDataSets();
+
+  const aidata = useAIData();
 
   const queries = useQueries({
     queries: useMemo(
@@ -114,12 +119,14 @@ export const LineChart = () => {
 
 
   const combinedLines = useMemo(() => combineLineData(queriesData), [queriesData]);
+  console.log(combinedLines)
 
+  // Avoid infinite loop by checking data equality
   useEffect(() => {
     if (!queriesData.length) return;
-    setDataSets(queriesData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queriesData]);
+    if (isEqual(queriesData, dataSets)) return;
+    setDataSets(queriesData)
+  }, [dataSets, queriesData, setDataSets]);
 
   if (isLoading) return <CircularProgress color="success" />;
 
@@ -132,7 +139,7 @@ export const LineChart = () => {
   return (
     <ResponsiveContainer height="100%" width="100%">
       <LineChartRoot
-        data={combinedLines}
+        data={aidata.length ? aidata : combinedLines}
         height={300}
         margin={{
           top: 5,
@@ -158,7 +165,7 @@ export const LineChart = () => {
           />
         ))}
       </LineChartRoot>
-    </ResponsiveContainer>);
+    </ResponsiveContainer>)
 };
 
 const LINE_COLORS = [
