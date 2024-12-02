@@ -3,6 +3,7 @@ import { Translations } from ".";
 
 export const ENGLISH: Translations = {
   search: "Search...",
+  makePredictions: "Make predictions",
   queryItems: {
     [ApiQueryOption.Nitrogen]: "Price of nitrogen",
     [ApiQueryOption.Phosphorus]: "Price of phosphorus",

@@ -27,7 +27,7 @@ import { useLocale } from "~/stores/LocaleStore";
 import { useSelection } from "~/stores/SelectionStore";
 import { useEffect, useMemo, useState } from "react";
 import { LOCALE } from "~/locale";
-import useOpenAI from "~/hooks/useOpenAi";
+import { useDataStore } from "~/stores/DataStore";
 
 const callQueryFuntion = (
   option: ApiQueryOption,
@@ -67,6 +67,8 @@ export const LineChart = () => {
   const [startYear, setStartYear] = useState<number>(2023);
   const [endYear, setEndYear] = useState<number>(2024);
 
+  const { setDataSets } = useDataStore();
+
   const queries = useQueries({
     queries: useMemo(
       () =>
@@ -97,10 +99,27 @@ export const LineChart = () => {
     [language, queries, selection]
   );
 
-  const combinedLines = useMemo(
-    () => combineLineData(queriesData),
-    [queriesData]
-  );
+  const queriesData: LineData[] = useMemo(() =>
+    queries.map((query, index) => {
+      if (query.data) {
+        return ({
+          label: LOCALE[language].queryItemLabels[selection[index]],
+          data: query.data,
+        }) as LineData;
+      }
+      return undefined
+    })
+      .filter((item): item is LineData => item !== undefined),
+    [language, queries, selection])
+
+
+  const combinedLines = useMemo(() => combineLineData(queriesData), [queriesData]);
+
+  useEffect(() => {
+    if (!queriesData.length) return;
+    setDataSets(queriesData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queriesData]);
 
   if (isLoading) return <CircularProgress color="success" />;
 
@@ -111,49 +130,35 @@ export const LineChart = () => {
   }
 
   return (
-    <>
-      <ResponsiveContainer height="100%" width="100%">
-        <LineChartRoot
-          data={combinedLines}
-          height={300}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-          width={500}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="quarter" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-
-          {selection.map((option, index) => (
-            <Line
-              activeDot={{ r: 8 }}
-              dataKey={LOCALE[language].queryItemLabels[option]}
-              key={option}
-              stroke={LINE_COLORS[index]}
-              type="monotone"
-            />
-          ))}
-        </LineChartRoot>
-      </ResponsiveContainer>
-      <Button
-        onClick={() => {
-          fetchCompletion({
-            prompt: queriesData,
-            model: "gpt-4o-mini",
-          });
+    <ResponsiveContainer height="100%" width="100%">
+      <LineChartRoot
+        data={combinedLines}
+        height={300}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
         }}
+        width={500}
       >
-        kysy jotain apilta
-      </Button>
-      <Box>{result}</Box>
-    </>
-  );
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="quarter" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+
+        {selection.map((option, index) => (
+          <Line
+            activeDot={{ r: 8 }}
+            dataKey={LOCALE[language].queryItemLabels[option]}
+            key={option}
+            stroke={LINE_COLORS[index]}
+            type="monotone"
+          />
+        ))}
+      </LineChartRoot>
+    </ResponsiveContainer>);
 };
 
 const LINE_COLORS = [
