@@ -4,6 +4,7 @@ import { FINNISH } from "./fi";
 
 export type Translations = {
   search: string;
+  makePredictions: string;
   queryItems: {
     [key in ApiQueryOption]: string;
   };

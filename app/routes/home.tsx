@@ -1,9 +1,13 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import { SearchableList } from '~/components/SearchList';
 import { LineChart } from '~/components/LineChart';
 import { Suspense } from 'react';
 import { LangSelect } from '~/components/LangSelect';
 import { NewsFeed } from '~/components/Newsfeed';
+import { LOCALE } from '~/locale';
+import { useLocale } from '~/stores/LocaleStore';
+import useOpenAI from '~/hooks/useOpenAi';
+import { useDataStore } from '~/stores/DataStore';
 
 export function meta() {
   return [
@@ -12,9 +16,11 @@ export function meta() {
   ];
 }
 
-
 export default function Home() {
 
+  const { language } = useLocale();
+  const { fetchCompletion } = useOpenAI()
+  const { dataSets } = useDataStore();
 
   return (
     <Box
@@ -75,6 +81,27 @@ export default function Home() {
           <LangSelect />
         </Box>
 
+        <Box id="toolbar" sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '3rem',
+          backgroundColor: 'background.paper',
+        }} >
+          <Button onClick={
+            () => {
+              console.log('making predictions');
+              fetchCompletion({
+                prompt: dataSets,
+                model: "gpt-4o-mini"
+              })
+            }
+          } variant="contained">
+            {LOCALE[language].makePredictions}
+          </Button>
+          työkalubaari :DDD
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -83,9 +110,7 @@ export default function Home() {
             alignItems: 'center',
             flex: 5,
             backgroundColor: 'background.paper',
-            borderRadius: '5px',
             p: '0.5rem',
-            border: '1px solid #E0E0E0' /* Subtle light gray border */,
           }}
         >
           <Suspense
