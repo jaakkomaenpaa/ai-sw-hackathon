@@ -9,7 +9,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { fetchFertiliserPrices, fetchRicePrices } from "~/api";
+import {
+  fetchCerealPrices,
+  fetchFertiliserPrices,
+  fetchRicePrices,
+} from "~/api";
 import {
   ApiQueryOption,
   FertiliserProduct,
@@ -40,6 +44,20 @@ const callQueryFuntion = (
     [ApiQueryOption.Potash]: () =>
       fetchFertiliserPrices(FertiliserProduct.Potash, startYear, endYear),
     [ApiQueryOption.Rice]: () => fetchRicePrices(startYear, endYear),
+    [ApiQueryOption.FeedOats]: () =>
+      fetchCerealPrices(CerealProduct.FeedOats, startYear, endYear),
+    [ApiQueryOption.FeedRye]: () =>
+      fetchCerealPrices(CerealProduct.FeedRye, startYear, endYear),
+    [ApiQueryOption.FeedWheat]: () =>
+      fetchCerealPrices(CerealProduct.FeedWheat, startYear, endYear),
+    [ApiQueryOption.MaltingBarley]: () =>
+      fetchCerealPrices(CerealProduct.MaltingBarley, startYear, endYear),
+    [ApiQueryOption.MillingOats]: () =>
+      fetchCerealPrices(CerealProduct.MillingOats, startYear, endYear),
+    [ApiQueryOption.MillingRye]: () =>
+      fetchCerealPrices(CerealProduct.MillingRye, startYear, endYear),
+    [ApiQueryOption.MillingWheat]: () =>
+      fetchCerealPrices(CerealProduct.MillingWheat, startYear, endYear),
   };
 
   return queryFunctions[option]();

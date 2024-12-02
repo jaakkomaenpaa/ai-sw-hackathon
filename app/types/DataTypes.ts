@@ -9,6 +9,16 @@ export enum FertiliserProduct {
   Phosphorus = "P (Phosphorus)",
 }
 
+export enum CerealProduct {
+  FeedOats = "AVO", 
+  FeedRye = "SEGFOUR",
+  FeedWheat = "BLTFOUT",
+  MaltingBarley = "ORGBRAS",
+  MillingOats = "AVOMILL",
+  MillingRye = "SEGPAN",
+  MillingWheat = "BLTPAN", // Works with PT
+}
+
 // Correlates with months from api response
 export enum ApiResponseMonth {
   January = "Jan",
@@ -44,6 +54,13 @@ export enum ApiQueryOption {
   Phosphorus = "phos",
   Potash = "pot",
   Rice = "rice",
+  FeedOats = "AVO",
+  FeedRye = "SEGFOUR",
+  FeedWheat = "BLTFOUT",
+  MaltingBarley = "ORGBRAS",
+  MillingOats = "AVOMILL",
+  MillingRye = "SEGPAN",
+  MillingWheat = "BLTPAN",
 }
 
 export enum Quarter {

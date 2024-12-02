@@ -117,7 +117,7 @@ export const transformMonthsToQuarters = <
       currentQuarterPrices.push(entry.price);
     } else if (quarter !== currentQuarter) {
       const sum = currentQuarterPrices.reduce((acc, num) => acc + num, 0);
-      const avgPrice = sum / currentQuarterPrices.length;
+      const avgPrice = sum / currentQuarterPrices.length || 0;
 
       let prevEntryYear = entry.year;
       if (data[index - 1]) {
@@ -129,11 +129,7 @@ export const transformMonthsToQuarters = <
         price: parseInt(avgPrice.toFixed(0)),
       });
 
-      currentQuarter++;
-      if (currentQuarter > 4) {
-        currentQuarter = 1;
-      }
-
+      currentQuarter = quarter;
       currentQuarterPrices = [];
     }
   });
@@ -170,11 +166,7 @@ export const transformWeeksToQuarters = <
         price: parseInt(avgPrice.toFixed(0)),
       });
 
-      currentQuarter++;
-      if (currentQuarter > 4) {
-        currentQuarter = 1;
-      }
-
+      currentQuarter = quarter;
       currentQuarterPrices = [];
     }
   });

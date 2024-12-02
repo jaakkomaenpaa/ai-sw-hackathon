@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FertiliserProduct, LineDataEntry } from "./types";
+import { CerealProduct, FertiliserProduct, LineDataEntry } from "./types";
 import {
   getWeekNumberByDate,
   transformMonthsToQuarters,
@@ -63,7 +63,10 @@ interface EditedRicePriceResponse extends RicePriceResponseObject {
   priceInt: number;
 }
 
-export const fetchRicePrices = async (startYear: number, endYear: number) => {
+export const fetchRicePrices = async (
+  startYear: number,
+  endYear: number
+): Promise<LineDataEntry[]> => {
   const countryCodes = "FR";
   const beginDate = `01/01/${startYear}`;
   const endDate = `31/12/${endYear}`;
@@ -71,7 +74,12 @@ export const fetchRicePrices = async (startYear: number, endYear: number) => {
   const stages = "Broken";
 
   const response = await axios.get(
-    `${BASE_URL}/rice/prices?memberStateCodes=${countryCodes}&beginDate=${beginDate}&endDate=${endDate}&varieties=${varieties}&stages=${stages}`
+    `${BASE_URL}/rice/prices` +
+      `?memberStateCodes=${countryCodes}` +
+      `&beginDate=${beginDate}` +
+      `&endDate=${endDate}` +
+      `&varieties=${varieties} ` +
+      `&stages=${stages}`
   );
 
   const modifiedData: EditedRicePriceResponse[] = response.data
@@ -92,7 +100,65 @@ export const fetchRicePrices = async (startYear: number, endYear: number) => {
   const transformedData: LineDataEntry[] =
     transformWeeksToQuarters<EditedRicePriceResponse>(modifiedData);
 
-  console.log("modified rice", transformedData);
+  return transformedData;
+};
+
+type CerealPriceResponseObject = {
+  memberStateCode: string;
+  memberStateName: string;
+  beginDate: string;
+  endDate: string;
+  weekNumber: number;
+  price: string;
+  unit: string;
+  productName: string;
+  marketName: string;
+  stageName: string;
+  referencePeriod: string;
+};
+
+interface EditedCerealPriceResponse extends CerealPriceResponseObject {
+  year: number;
+  priceInt: number;
+}
+
+export const fetchCerealPrices = async (
+  product: CerealProduct,
+  startYear: number,
+  endYear: number
+): Promise<LineDataEntry[]> => {
+  const countryCodes = "PT";
+  const beginDate = `01/01/${startYear}`;
+  const endDate = `31/12/${endYear}`;
+  const stageCodes = "DEPPORT";
+  const marketCodes = "LIS";
+
+  const response = await axios.get(
+    `${BASE_URL}/cereal/prices` +
+      `?memberStateCodes=${countryCodes}` +
+      `&productCodes=${product}` +
+      `&beginDate=${beginDate}` +
+      `&endDate=${endDate}
+  `
+  );
+
+  const modifiedData: EditedCerealPriceResponse[] = response.data
+    .reverse()
+    .map((entry: EditedCerealPriceResponse) => {
+      const year = parseInt(entry.beginDate.split("/")[2]);
+      const priceInt = parseInt(entry.price.split("€")[1]);
+      const weekNumber = getWeekNumberByDate(entry.beginDate);
+
+      return {
+        ...entry,
+        year,
+        priceInt,
+        weekNumber,
+      };
+    });
+
+  const transformedData: LineDataEntry[] =
+    transformWeeksToQuarters<EditedCerealPriceResponse>(modifiedData);
 
   return transformedData;
 };
