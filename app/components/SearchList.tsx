@@ -48,7 +48,6 @@ const StyledList = styled(List)(({ theme }) => ({
   padding: "0.5rem", // Inner padding
   border: "1px solid #cccaca", // Subtle border
   boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.05)", // Very subtle shadow
-  maxHeight: "50%",
   overflowY: "auto", // Allow scrolling if content overflows
 }));
 
@@ -83,11 +82,11 @@ export const SearchableList = () => {
 
   return (
     <Box
-      style={{
+      sx={{
         display: "flex",
         flex: 1,
         flexDirection: "column",
-        backgroundColor: "background.paper",
+        maxHeight: "50%",
       }}
     >
       {/* Search Field */}

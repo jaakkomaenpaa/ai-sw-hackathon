@@ -3,6 +3,7 @@ import { SearchableList } from '~/components/SearchList';
 import { LineChart } from '~/components/LineChart';
 import { Suspense } from 'react';
 import { LangSelect } from '~/components/LangSelect';
+import { NewsFeed } from '~/components/Newsfeed';
 
 export function meta() {
   return [
@@ -26,7 +27,6 @@ export default function Home() {
         gap: '0.5rem',
       }}
     >
-      <LangSelect />
       <Box
         sx={{
           display: 'flex',
@@ -48,7 +48,7 @@ export default function Home() {
             border: '1px solid #cccaca' /* Subtle light gray border */,
           }}
         >
-          uutisvirta??
+          <NewsFeed />
         </Box>
       </Box>
       <Box
@@ -72,6 +72,7 @@ export default function Home() {
           }}
         >
           <Typography variant="h1">AgriSight</Typography>
+          <LangSelect />
         </Box>
 
         <Box
